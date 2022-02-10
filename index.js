@@ -20,6 +20,31 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run() {
     try {
         await client.connect();
+
+        //db
+        const database = client.db("heroRider");
+        // collections
+        const studentCollection = database.collection("students");
+        const foodCollection = database.collection("foods");
+
+
+        /*******************************************\
+         -------------all post api's----------------
+        \*******************************************/
+        // users
+        app.post('/students', async (req, res) => {
+            const doc = req.body;
+            const result = await studentCollection.insertOne(doc);
+            res.send(result);
+        });
+
+        // users
+        app.post('/foods', async (req, res) => {
+            const doc = req.body;
+            console.log(doc)
+            const result = await foodCollection.insertOne(doc);
+            res.send(result);
+        });
     }
     finally {
         // await client.close();
