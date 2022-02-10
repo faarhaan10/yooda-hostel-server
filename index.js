@@ -52,10 +52,26 @@ async function run() {
         \*******************************************/
         //foods
         app.get('/foods', async (req, res) => {
-            console.log('hiyye')
             const page = req.query.page;
             const size = parseInt(req.query.size);
             const cursor = foodCollection.find({}).sort({ "_id": -1 });
+            const count = await cursor.count();
+
+            let result;
+            if (page) {
+                result = await cursor.skip(page * size).limit(size).toArray();
+            }
+            else {
+                result = await cursor.toArray();
+            }
+            res.send({ result, count });
+        });
+
+        //students
+        app.get('/students', async (req, res) => {
+            const page = req.query.page;
+            const size = parseInt(req.query.size);
+            const cursor = studentCollection.find({}).sort({ "_id": -1 });
             const count = await cursor.count();
 
             let result;
@@ -78,14 +94,34 @@ async function run() {
             const doc = req.body;
             const filter = { _id: ObjectId(id) };
             const updateDoc = { $set: doc };
-            const result = await foodCollection.updateOne(filter, updateDoc);
+            const options = { upsert: true };
+            const result = await foodCollection.updateOne(filter, updateDoc, options);
+            res.send(result);
+        });
+
+        //students
+        app.put('/students/:id', async (req, res) => {
+            const id = req.params.id;
+            const doc = req.body;
+            const filter = { _id: ObjectId(id) };
+            const updateDoc = { $set: doc };
+            const options = { upsert: true };
+            const result = await studentCollection.updateOne(filter, updateDoc, options);
             res.send(result);
         });
 
 
+        /*******************************************\
+         -------------all delete api's----------------
+        \*******************************************/
 
-
-
+        //delete food
+        app.delete('/foods/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await foodCollection.deleteOne(query);
+            res.send(result);
+        });
 
 
     }
