@@ -110,6 +110,17 @@ async function run() {
             res.send(result);
         });
 
+        //update multiple students
+        app.put('/students', async (req, res) => {
+            const doc = req.body;
+            const students = doc.selectedStudents.map(item => ObjectId(item));
+            const query = {
+                _id: { $in: students }
+            };
+            const updateDoc = { $set: { status: doc.status } };
+            const result = await studentCollection.updateMany(query, updateDoc);
+            res.send(result);
+        });
 
         /*******************************************\
          -------------all delete api's----------------
