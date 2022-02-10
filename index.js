@@ -45,6 +45,28 @@ async function run() {
             const result = await foodCollection.insertOne(doc);
             res.send(result);
         });
+
+
+        /*******************************************\
+         -------------all get api's----------------
+        \*******************************************/
+        //foods
+        app.get('/foods', async (req, res) => {
+            console.log('hiyye')
+            const page = req.query.page;
+            const size = parseInt(req.query.size);
+            const cursor = foodCollection.find({}).sort({ "_id": -1 });
+            const count = await cursor.count();
+
+            let result;
+            if (page) {
+                result = await cursor.skip(page * size).limit(size).toArray();
+            }
+            else {
+                result = await cursor.toArray();
+            }
+            res.send({ result, count });
+        });
     }
     finally {
         // await client.close();
