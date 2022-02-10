@@ -67,6 +67,27 @@ async function run() {
             }
             res.send({ result, count });
         });
+
+
+        /*******************************************\
+         -------------all put api's----------------
+        \*******************************************/
+        //foods
+        app.put('/foods/:id', async (req, res) => {
+            const id = req.params.id;
+            const doc = req.body;
+            const filter = { _id: ObjectId(id) };
+            const updateDoc = { $set: doc };
+            const result = await foodCollection.updateOne(filter, updateDoc);
+            res.send(result);
+        });
+
+
+
+
+
+
+
     }
     finally {
         // await client.close();
