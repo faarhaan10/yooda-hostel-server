@@ -26,6 +26,7 @@ async function run() {
         // collections
         const studentCollection = database.collection("students");
         const foodCollection = database.collection("foods");
+        const serveCollection = database.collection("distribution");
 
 
         /*******************************************\
@@ -41,8 +42,14 @@ async function run() {
         // users
         app.post('/foods', async (req, res) => {
             const doc = req.body;
-            console.log(doc)
             const result = await foodCollection.insertOne(doc);
+            res.send(result);
+        });
+
+        // food serve
+        app.post('/serve', async (req, res) => {
+            const doc = req.body;
+            const result = await serveCollection.insertOne(doc);
             res.send(result);
         });
 
@@ -84,6 +91,14 @@ async function run() {
             res.send({ result, count });
         });
 
+        // get single data api 
+        app.get('/student/roll/:roll', async (req, res) => {
+            const roll = req.params.roll;
+            const query = { roll: roll };
+            const result = await studentCollection.findOne(query);
+            res.send(result);
+        });
+
 
         /*******************************************\
          -------------all put api's----------------
@@ -121,6 +136,17 @@ async function run() {
             const result = await studentCollection.updateMany(query, updateDoc);
             res.send(result);
         });
+
+        //students
+        app.put('/serve/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            const updateDoc = { $set: { status: 'served' } };
+            const options = { upsert: true };
+            const result = await studentCollection.updateOne(filter, updateDoc, options);
+            res.send(result);
+        });
+
 
         /*******************************************\
          -------------all delete api's----------------
